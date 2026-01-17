@@ -10,44 +10,44 @@ Date: Jan 17, 2026
 
 # folder structure
 - secrets/
-    service account key
+    - service account key
 - scripts/
     - build_index.py 
-    lists files in the google drive test folder
-    saves drive metadata (file_id, name, size, time)
-    output result drive_index.csv
+        - lists files in the google drive test folder
+        - saves drive metadata (file_id, name, size, time)
+        - output result drive_index.csv
     - download_drive.py
-    downloads images from drive into data/staging
-    renames files as file_id_originalname to avoid dupes
-    logs successes/failures
-    output results download_log.csv
+        - downloads images from drive into data/staging
+        - renames files as file_id_originalname to avoid dupes
+        - logs successes/failures
+        - output results download_log.csv
     - make_manifest.py
-    creates a map of downloaded files
-    links drive IDs to local file paths
-    output result manifest.csv
+        - creates a map of downloaded files
+        - links drive IDs to local file paths
+        - output result manifest.csv
     - extract_metadata.py
-    reads image EXIF data (date/time) and image size
-    output results metadata.csv
+        - reads image EXIF data (date/time) and image size
+        - output results metadata.csv
     - make_output.py
-    merges drive metadata,local file info, EXIF metadata
-    might add placeholder columns for ML (like has_animal or condfidence levels)
-    output results output.csv
+        - merges drive metadata,local file info, EXIF metadata
+        - might add placeholder columns for ML (like has_animal or condfidence levels)
+        - output results output.csv
     - run_pipeline.py
-    runs all scripts in order
-    output results output.csv
+        - runs all scripts in order
+        - output results output.csv
 - data/staging/
-    temp local image downloads
+    - temp local image downloads
 - data/outputs/
     - drive_index.csv
-    lists everything in the test folder
+        - lists everything in the test folder
     - download_log.csv
-    log of each download attempt
+        - log of each download attempt
     - manifest.csv
-    map of downloaded files local
+        - map of downloaded files local
     - metadata.csv
-    image info pulled from the jpg file
+    -   image info pulled from the jpg file
     - output.csv
-    merges drive metadata, local file info and image metadata
+        - merges drive metadata, local file info and image metadata
 
 # dependencies
 - python 3.10+
