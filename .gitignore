@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+secrets/
+*.json
+
+data/staging/
+data/outputs/
+data/test_images/
+
+*.zip
