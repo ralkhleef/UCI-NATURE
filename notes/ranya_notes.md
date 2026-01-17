@@ -15,26 +15,26 @@ Date: Jan 17, 2026
     - build_index.py 
         - lists files in the google drive test folder
         - saves drive metadata (file_id, name, size, time)
-        - output result drive_index.csv
+        - prints drive_index.csv
     - download_drive.py
         - downloads images from drive into data/staging
         - renames files as file_id_originalname to avoid dupes
         - logs successes/failures
-        - output results download_log.csv
+        - prints download_log.csv
     - make_manifest.py
         - creates a map of downloaded files
         - links drive IDs to local file paths
-        - output result manifest.csv
+        - prints manifest.csv
     - extract_metadata.py
         - reads image EXIF data (date/time) and image size
-        - output results metadata.csv
+        - prints metadata.csv
     - make_output.py
         - merges drive metadata,local file info, EXIF metadata
-        - might add placeholder columns for ML (like has_animal or condfidence levels)
-        - output results output.csv
+        - might add placeholder columns for ML (like has_animal or confidence levels)
+        - prints output.csv
     - run_pipeline.py
         - runs all scripts in order
-        - output results output.csv
+        - prints output.csv
 - data/staging/
     - temp local image downloads
 - data/outputs/
@@ -43,7 +43,7 @@ Date: Jan 17, 2026
     - download_log.csv
         - log of each download attempt
     - manifest.csv
-        - map of downloaded files local
+        - map of locally downloaded files
     - metadata.csv
     -   image info pulled from the jpg file
     - output.csv
@@ -53,7 +53,7 @@ Date: Jan 17, 2026
 - python 3.10+
 - googledrive api enabled
 - service account key in secrets/inf191a-uci-nature-sa.json
-- python packages needed(also listed in requirments.txt):
+- python packages needed (also listed in requirements.txt):
     - google-api-python-client
     - google-auth
     - pillow 
@@ -64,7 +64,7 @@ Date: Jan 17, 2026
 
 # how to run
 - python scripts/run_pipeline.py
-    - or python scripts/<filename>.py
+    - or python scripts/filename.py
 
 # current status 1/17
 - google drive api works
