@@ -10,4 +10,6 @@ data/staging/
 data/outputs/
 data/test_images/
 
+notes/to_do.md
+
 *.zip
