@@ -16,7 +16,7 @@ FOLDER_ID = "1MLRCj2kQrKnlwRPto4Z5eFka5HgDaLOv"               # folder to pull f
 OUT_DIR = Path("data/staging")                                # where images get downloaded locally
 LOG_CSV = Path("data/outputs/download_log.csv")               # download log
 
-MAX_DOWNLOADS = 300                                           # how many downloads to do 
+MAX_DOWNLOADS = None                                         # how many downloads to do (updated)
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]    # read only access
 
 # only download these file names
