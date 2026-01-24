@@ -93,11 +93,11 @@ project/
 
 ## Team
 
-- Ghadeer A - Pipeline design & duplicate detection
-- Ranya A. Alkhleef - Data download & reliability
-- Andy Dao Hoang - Pipeline execution & debugging
-- Jadon Tapp - Data review & documentation
-- Yifan Wu - Design & user interaction
+- Ghadeer Al Jufout 
+- Ranya A. Alkhleef 
+- Andy Dao Hoang
+- Jadon Tapp 
+- Yifan Wu 
 
 ## Partner
 
