@@ -1,12 +1,12 @@
 # merges manifest.csv, metadata.csv, drive_index.csv into output.csv
-
 import csv
 from pathlib import Path
 
 MANIFEST = Path("data/outputs/manifest.csv")
 META = Path("data/outputs/metadata.csv")
 DRIVE_INDEX = Path("data/outputs/drive_index.csv")
-OUT = Path("data/outputs/output.csv")
+OUT = Path("data/outputs/output.csv")                  # keeping this for debugging
+RESULTS = Path("data/outputs/results.csv")             # new
 
 
 def load_csv_by_key(path: Path, key: str) -> dict:
@@ -17,6 +17,16 @@ def load_csv_by_key(path: Path, key: str) -> dict:
             if k:
                 out[k] = row
     return out
+
+
+def write_csv(path: Path, rows: list[dict]) -> None:
+    if not rows:
+        raise ValueError(f"No rows to write for {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(rows)
 
 
 def main():
@@ -40,13 +50,13 @@ def main():
 
             out_rows.append({
                 "file_id": file_id,
-                "file_name": row["file_name"],
-                "local_file_name": row["local_file_name"],
-                "local_path": row["local_path"],
+                "file_name": row.get("file_name", ""),
+                "local_file_name": row.get("local_file_name", ""),
+                "local_path": row.get("local_path", ""),
 
                 # local file info
-                "size_bytes_local": row["size_bytes"],
-                "modified_time_local": row["modified_time"],
+                "size_bytes_local": row.get("size_bytes", ""),
+                "modified_time_local": row.get("modified_time", ""),
 
                 # extracted metadata
                 "exif_datetime": m.get("exif_datetime", ""),
@@ -60,16 +70,35 @@ def main():
                 "drive_mimeType": d.get("mimeType", ""),
             })
 
-    # sort for consistent output
-    out_rows.sort(key=lambda r: r["file_name"])
+    out_rows.sort(key=lambda r: (r.get("file_name", ""), r.get("file_id", "")))
 
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT, "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=list(out_rows[0].keys()))
-        w.writeheader()
-        w.writerows(out_rows)
-
+    write_csv(OUT, out_rows)
     print(f"wrote {len(out_rows)} rows -> {OUT}")
+
+    results_rows = []
+    for r in out_rows:
+        timestamp = r.get("exif_datetime", "") or r.get("drive_modifiedTime", "")
+        results_rows.append({
+            "image_id": r.get("file_id", ""),
+            "filename": r.get("file_name", ""),
+            "local_path": r.get("local_path", ""),
+
+            # will fill after we parse Drive folder paths
+            "camera": "",
+            "location": "",
+            "deployment_id": "",
+
+            "timestamp": timestamp,
+
+            # fill later (ML)
+            "species": "",
+            "is_blank": "",
+            "confidence": "",
+            "uncertainty": "",
+        })
+
+    write_csv(RESULTS, results_rows)
+    print(f"wrote {len(results_rows)} rows -> {RESULTS}")
 
 
 if __name__ == "__main__":
