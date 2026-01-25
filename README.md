@@ -8,12 +8,12 @@ Current workflow relies on manual review by student interns. Images accumulate f
 
 ## Solution
 
-Automated pipeline that retrieves images from Google Drive, extracts metadata, detects duplicates, and classifies images as blank or containing animals.
+Automated pipeline that retrieves images from Google Drive, extracts metadata, detects duplicates, and classifies images as blank or containing animals. 
 
 ## Pipeline Flow
 
 ```
-Google Drive → Download → Metadata → Duplicate Detection → Classification → CSV Output
+Google Drive → Download → Metadata → Duplicate Detection → Classification → CSV Output (Subject to change with aditional steps)
 ```
 
 ## Components
@@ -25,11 +25,11 @@ Google Drive → Download → Metadata → Duplicate Detection → Classificatio
 - `extract_metadata.py` - Extract EXIF data
 - `make_output.py` - Generate final CSV
 - `run_pipeline.py` - Execute full pipeline
+- `config.py` - Configuration settings
 
 **Additional:**
 - `detect_duplicates.py` - Perceptual hashing for duplicate detection
-- `config.py` - Configuration settings
-
+- ...
 ## Installation
 
 ```bash
