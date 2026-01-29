@@ -11,7 +11,7 @@ from googleapiclient.http import MediaIoBaseDownload
 
 # config 
 SERVICE_ACCOUNT_FILE = "secrets/inf191a-uci-nature-sa.json"   # key file for service account auth
-FOLDER_ID = "1MLRCj2kQrKnlwRPto4Z5eFka5HgDaLOv"               # folder to pull from 
+FOLDER_ID = "0ACQBvZlfUN2CUk9PVA"               # folder to pull from 
 
 OUT_DIR = Path("data/staging")                                # where images get downloaded locally
 LOG_CSV = Path("data/outputs/download_log.csv")               # download log

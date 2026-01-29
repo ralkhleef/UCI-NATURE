@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 SERVICE_ACCOUNT_FILE = "secrets/inf191a-uci-nature-sa.json"
-FOLDER_ID = "1MLRCj2kQrKnlwRPto4Z5eFka5HgDaLOv"
+FOLDER_ID = "0ACQBvZlfUN2CUk9PVA"
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
 OUT_CSV = Path("data/outputs/drive_index.csv")

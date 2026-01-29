@@ -5,7 +5,7 @@ from googleapiclient.discovery import build
 
 # config 
 SERVICE_ACCOUNT_FILE = "secrets/inf191a-uci-nature-sa.json"   # key file for service account auth
-FOLDER_ID = "1MLRCj2kQrKnlwRPto4Z5eFka5HgDaLOv"               # drive folder to pull from 
+FOLDER_ID = "0ACQBvZlfUN2CUk9PVA"               # drive folder to pull from 
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]    # read only access
 
 
