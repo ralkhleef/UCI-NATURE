@@ -1,5 +1,4 @@
-# makes a CSV index of everything inside the Drive test folder (ids + basic metadata)
-
+# makes a CSV index of everything inside the Drive folder (ids + basic metadata) — recursive
 import csv
 from pathlib import Path
 from google.oauth2 import service_account
@@ -13,17 +12,13 @@ OUT_CSV = Path("data/outputs/drive_index.csv")
 
 FIELDS = ["file_name", "file_id", "drive_folder_id", "mimeType", "modifiedTime", "size"]
 
+FOLDER_MIMETYPE = "application/vnd.google-apps.folder"      # crawl folders
 
-def main():
-    OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
+PRINT_EVERY = 500        # progress print
+MAX_ROWS = 2000          # leave none for full run
 
-    creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
-    )
-    drive = build("drive", "v3", credentials=creds)
-    query = f"'{FOLDER_ID}' in parents and trashed = false"
-
-    rows = []
+def list_children(drive, folder_id: str):
+    query = f"'{folder_id}' in parents and trashed = false"
     page_token = None
 
     while True:
@@ -37,7 +32,40 @@ def main():
         ).execute()
 
         for item in resp.get("files", []):
-            parents = item.get("parents") or [""]
+            yield item
+
+        page_token = resp.get("nextPageToken")
+        if not page_token:
+            break
+
+
+def main():
+    OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
+
+    creds = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    )
+    drive = build("drive", "v3", credentials=creds)
+
+    rows = []
+
+    stack = [FOLDER_ID]         # start crawling from root
+    seen = set()
+
+    folders_done = 0
+
+    while stack:
+        current_folder_id = stack.pop()
+        if current_folder_id in seen:
+            continue
+        seen.add(current_folder_id)
+
+        folders_done += 1
+        if folders_done % 25 == 0:
+            print(f"folders visited: {folders_done}, rows so far: {len(rows)}")
+
+        for item in list_children(drive, current_folder_id):
+            parents = item.get("parents") or [current_folder_id]
 
             rows.append({
                 "file_name": item.get("name", ""),
@@ -48,9 +76,16 @@ def main():
                 "size": item.get("size", ""),
             })
 
-        page_token = resp.get("nextPageToken")
-        if not page_token:
-            break
+            if len(rows) % PRINT_EVERY == 0:
+                print(f"rows indexed: {len(rows)}")
+
+            if item.get("mimeType") == FOLDER_MIMETYPE:
+                stack.append(item["id"])
+
+            if MAX_ROWS is not None and len(rows) >= MAX_ROWS:
+                print(f"stopping early at MAX_ROWS={MAX_ROWS}")
+                stack.clear()
+                break
 
     rows.sort(key=lambda r: r["file_name"])
 
@@ -60,8 +95,6 @@ def main():
         w.writerows(rows)
 
     print(f"wrote {len(rows)} rows -> {OUT_CSV}")
-    if rows:
-        print("Example:", rows[0]["file_name"], rows[0]["file_id"])
 
 
 if __name__ == "__main__":
