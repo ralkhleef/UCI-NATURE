@@ -1,80 +1,178 @@
-Date: Jan 17, 2026
+**Last updated:** Feb 2026  
+---
 
-# project goal
-- address a backlog of 100,00+ unprocessed images stored in google drive
-- build a functional data pipeline that:
-    - retrieves images from google drive
-    - classifies images as blank vs containing animals
-    - create a structured spreadsheet with results 
-- ML accuracy is secondary, the primary deliverable is a working pipeline
+## Project Goal
 
-# folder structure
-- secrets/
-    - service account key
-- scripts/
-    - build_index.py 
-        - lists files in the google drive test folder
-        - saves drive metadata (file_id, name, size, time)
-        - prints drive_index.csv
-    - download_drive.py
-        - downloads images from drive into data/staging
-        - renames files as file_id_originalname to avoid dupes
-        - logs successes/failures
-        - prints download_log.csv
-    - make_manifest.py
-        - creates a map of downloaded files
-        - links drive IDs to local file paths
-        - prints manifest.csv
-    - extract_metadata.py
-        - reads image EXIF data (date/time) and image size
-        - prints metadata.csv
-    - make_output.py
-        - merges drive metadata,local file info, EXIF metadata
-        - might add placeholder columns for ML (like has_animal or confidence levels)
-        - prints output.csv
-    - run_pipeline.py
-        - runs all scripts in order
-        - prints output.csv
-- data/staging/
-    - temp local image downloads
-- data/outputs/
-    - drive_index.csv
-        - lists everything in the test folder
-    - download_log.csv
-        - log of each download attempt
-    - manifest.csv
-        - map of locally downloaded files
-    - metadata.csv
-    -   image info pulled from the jpg file
-    - output.csv
-        - merges drive metadata, local file info and image metadata
+- Process **100,000+ unprocessed wildlife images** in Google Drive
+- Build a **reliable, low-cost pipeline**
+- Output a **usable spreadsheet** for non-technical users
 
-# dependencies
-- python 3.10+
-- googledrive api enabled
-- service account key in secrets/inf191a-uci-nature-sa.json
-- python packages needed (also listed in requirements.txt):
-    - google-api-python-client
-    - google-auth
-    - pillow 
-    - exilfread
+**Key constraints**
+- ML accuracy is secondary
+- Pipeline correctness > model performance
+- Species classification is future work
 
-# install w/
-- pip install google-api-python-client google-auth pillow exifread
+---
 
-# how to run
-- python scripts/run_pipeline.py
-    - or python scripts/filename.py
+## Pipeline Overview
 
-# current status 1/17
-- google drive api works
-- pulls images from google drive, avoids duplicate file names and exports metadata into CSVs
-- it doesn’t do any animal detection yet
+index → download → parse → merge → export
 
-# what still needs work
-- does NOT 
-    - detect animals
-    - classify species
-    - separate blank vs animal images
-- implement a rerun function to avoid redownloading too much
-- add helpers
+
+- **Index:** collect image file IDs + full Drive paths  
+- **Download:** download by file ID, preserve folder structure  
+- **Parse:** extract EXIF metadata (date/time)  
+- **Merge:** combine metadata + ML placeholders  
+- **Export:** output final CSV
+
+---
+
+## Repository Structure
+
+secrets/
+service_account.json
+
+scripts/
+build_index.py
+download_drive.py
+extract_metadata.py
+make_output.py
+run_pipeline.py
+
+data/
+images/ # mirrors Drive folders
+outputs/
+drive_index.csv
+download_log.csv
+metadata.csv
+output.csv
+
+
+---
+
+## Script Responsibilities
+
+### build_index.py
+- Recursively scans Google Drive
+- Images only (no folders, no spreadsheets)
+- Captures:
+  - file_id
+  - file_name
+  - mime_type
+  - drive_path
+- Output:
+  - data/outputs/drive_index.csv
+
+---
+
+### download_drive.py
+- Reads drive_index.csv
+- Downloads images using file_id
+- Saves to data/images/ using Drive path
+- Avoids filename collisions
+- Logs download results
+- Output:
+  - data/outputs/download_log.csv
+
+---
+
+### extract_metadata.py
+- Reads downloaded images
+- Extracts EXIF:
+  - date
+  - time
+- Adds ML placeholder columns
+- Output:
+  - data/outputs/metadata.csv
+
+---
+
+### make_output.py
+- Merges:
+  - drive_index
+  - local file paths
+  - image metadata
+  - ML placeholders
+- Output:
+  - data/outputs/output.csv
+
+---
+
+### run_pipeline.py
+Runs scripts in order:
+1. build_index  
+2. download_drive  
+3. extract_metadata  
+4. make_output  
+
+---
+
+## Output Columns
+
+**Current / Planned**
+- image_id
+- camera_name (from folder path)
+- date
+- time
+- species (placeholder)
+- count (placeholder)
+- model_certainty (placeholder)
+
+**Excluded**
+- deployment dates
+- processing time
+- cloud metrics
+
+---
+
+## Dependencies
+
+- Python 3.10+
+- Google Drive API
+- Service account key in secrets/
+
+**Packages**
+- google-api-python-client
+- google-auth
+- pillow
+- exifread
+
+---
+
+## Run Commands
+
+Full pipeline:
+python scripts/run_pipeline.py
+
+
+Single step:
+
+python scripts/build_index.py
+python scripts/download_drive.py
+
+---
+
+## Current Status
+
+**Working**
+- Drive indexing (recursive)
+- File ID–based downloads
+- Folder structure preserved
+- Metadata extraction
+- CSV outputs
+
+**Missing**
+- Blank vs animal detection
+- Species classification
+- Retry / resume logic
+- Duplicate detection
+- Long-term storage solution
+
+---
+
+## Next Steps
+
+- Pilot on small image batch
+- Validate output CSV with partner
+- Add blank vs animal classification
+- Improve reliability (resume, dedupe)
